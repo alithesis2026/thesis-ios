@@ -54,6 +54,7 @@ final class MovieDetailViewController: UIViewController {
 
     private let activityIndicator = UIActivityIndicatorView(style: .large)
     private lazy var favoriteButton = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: self, action: #selector(handleFavoriteTapped))
+    private lazy var shareButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(handleShareTapped))
 
     init(viewModel: MovieDetailViewModel) {
         self.viewModel = viewModel
@@ -67,7 +68,7 @@ final class MovieDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        navigationItem.rightBarButtonItem = favoriteButton
+        navigationItem.rightBarButtonItems = [favoriteButton, shareButton]
         setUpLayout()
         bindViewModel()
 
@@ -172,6 +173,12 @@ final class MovieDetailViewController: UIViewController {
 
     @objc private func handleFavoriteTapped() {
         viewModel.toggleFavorite()
+    }
+
+    @objc private func handleShareTapped() {
+        let title = viewModel.detail!.title
+        let activityViewController = UIActivityViewController(activityItems: [title], applicationActivities: nil)
+        present(activityViewController, animated: true)
     }
 
     private func presentError(message: String) {
