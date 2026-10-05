@@ -50,6 +50,7 @@ final class MovieListViewModel: ObservableObject {
             movies.append(contentsOf: response.results.map { Movie(dto: $0) })
             currentPage = response.page
             totalPages = response.totalPages
+            ThumbnailMemoryCache.shared.prefetch(posterPaths: response.results.compactMap(\.posterPath))
         } catch let error as NetworkError {
             errorMessage = error.userMessage
         } catch {
