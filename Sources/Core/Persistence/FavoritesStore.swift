@@ -7,6 +7,7 @@ protocol FavoritesStoring {
     func isFavorite(movieId: Int) -> Bool
     func toggleFavorite(movie: Movie)
     func fetchAllFavorites() -> [Movie]
+    func favoritesCount() -> Int
 }
 
 final class FavoritesStore: FavoritesStoring {
@@ -53,6 +54,10 @@ final class FavoritesStore: FavoritesStoring {
                 releaseDate: entity.releaseDate
             )
         }
+    }
+
+    func favoritesCount() -> Int {
+        (try? context.count(for: FavoriteMovie.fetchRequest())) ?? 0
     }
 
     private func fetchEntity(id: Int) -> FavoriteMovie? {
