@@ -37,5 +37,6 @@ final class MovieDetailViewModel: ObservableObject {
         guard let detail else { return }
         favoritesStore.toggleFavorite(movie: Movie(detail: detail))
         isFavorite = favoritesStore.isFavorite(movieId: movieId)
+        AnalyticsManager.shared.track("favorite_toggled", parameters: ["movie_id": movieId, "is_favorite": isFavorite])
     }
 }
