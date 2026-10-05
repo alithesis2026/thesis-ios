@@ -50,10 +50,18 @@ final class MovieListViewModel: ObservableObject {
             movies.append(contentsOf: response.results.map { Movie(dto: $0) })
             currentPage = response.page
             totalPages = response.totalPages
+            Task { await prefetchNextPageSilently() }
         } catch let error as NetworkError {
             errorMessage = error.userMessage
         } catch {
             errorMessage = NetworkError.unknown.userMessage
+        }
+    }
+
+    private func prefetchNextPageSilently() async {
+        do {
+            _ = try await tmdbService.popularMovies(page: currentPage + 2)
+        } catch {
         }
     }
 }
