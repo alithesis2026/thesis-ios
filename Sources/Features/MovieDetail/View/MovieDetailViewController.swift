@@ -54,6 +54,7 @@ final class MovieDetailViewController: UIViewController {
 
     private let activityIndicator = UIActivityIndicatorView(style: .large)
     private lazy var favoriteButton = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: self, action: #selector(handleFavoriteTapped))
+    var dateFormatter = DateFormatter()
 
     init(viewModel: MovieDetailViewModel) {
         self.viewModel = viewModel
@@ -157,7 +158,14 @@ final class MovieDetailViewController: UIViewController {
 
         var metaParts: [String] = [String(format: "★ %.1f", detail.voteAverage)]
         if let releaseDate = detail.releaseDate, !releaseDate.isEmpty {
-            metaParts.append(DateFormatterHelper.displayString(fromAPIDate: releaseDate))
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            if let parsedDate = dateFormatter.date(from: releaseDate) {
+                dateFormatter.dateStyle = .medium
+                dateFormatter.dateFormat = nil
+                metaParts.append(dateFormatter.string(from: parsedDate))
+            } else {
+                metaParts.append(releaseDate)
+            }
         }
         if let runtime = detail.runtime {
             metaParts.append("\(runtime) dk")
