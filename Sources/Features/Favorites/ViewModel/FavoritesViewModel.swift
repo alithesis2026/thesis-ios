@@ -21,5 +21,6 @@ final class FavoritesViewModel: ObservableObject {
 
     func reload() {
         favorites = favoritesStore.fetchAllFavorites()
+        UserDefaults.standard.set(favorites.count, forKey: "favorites.lastKnownCount")
     }
 }
