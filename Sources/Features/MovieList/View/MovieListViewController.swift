@@ -22,6 +22,7 @@ final class MovieListViewController: UIViewController {
 
     private let refreshControl = UIRefreshControl()
     private let activityIndicator = UIActivityIndicatorView(style: .large)
+    private let filterSearchController = UISearchController(searchResultsController: nil)
 
     init(viewModel: MovieListViewModel) {
         self.viewModel = viewModel
@@ -40,6 +41,9 @@ final class MovieListViewController: UIViewController {
 
         refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
         collectionView.refreshControl = refreshControl
+
+        filterSearchController.searchResultsUpdater = self
+        navigationItem.searchController = filterSearchController
 
         Task { await viewModel.loadInitialPageIfNeeded() }
     }
@@ -127,6 +131,12 @@ final class MovieListViewController: UIViewController {
 
         let section = NSCollectionLayoutSection(group: group)
         return UICollectionViewCompositionalLayout(section: section)
+    }
+}
+
+extension MovieListViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        viewModel.filter(byTitleContaining: searchController.searchBar.text ?? "")
     }
 }
 
