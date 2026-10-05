@@ -1,6 +1,18 @@
 import Foundation
 import Combine
 
+private struct SearchQueryLogger {
+    func log(_ query: String, completion: @escaping () -> Void) {
+        DispatchQueue.global().async { [weak self] in
+            print("Search query logged: \(query)")
+            self?.flush()
+            completion()
+        }
+    }
+
+    private func flush() {}
+}
+
 @MainActor
 final class SearchViewModel: ObservableObject {
     @Published var queryText: String = ""
@@ -14,6 +26,7 @@ final class SearchViewModel: ObservableObject {
     private var totalPages = 1
     private var isFetching = false
     private var activeQuery = ""
+    private let queryLogger = SearchQueryLogger()
 
     init(tmdbService: TMDBServicing) {
         self.tmdbService = tmdbService
@@ -43,6 +56,7 @@ final class SearchViewModel: ObservableObject {
         errorMessage = nil
 
         guard !trimmedQuery.isEmpty else { return }
+        queryLogger.log(trimmedQuery) {}
         await loadNextPage()
     }
 
