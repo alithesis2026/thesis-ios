@@ -34,6 +34,14 @@ final class SearchViewModel: ObservableObject {
         Task { await loadNextPage() }
     }
 
+    func searchSuggestionTapped(_ suggestion: String) {
+        activeQuery = suggestion
+        currentPage = 0
+        totalPages = 1
+        results = []
+        Task { await loadNextPage() }
+    }
+
     private func search(query: String) async {
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
         activeQuery = trimmedQuery
