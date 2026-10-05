@@ -45,7 +45,10 @@ final class MovieListCell: UICollectionViewCell {
     func configure(with movie: Movie) {
         titleLabel.text = movie.title
         ratingLabel.text = String(format: "★ %.1f", movie.voteAverage)
-        posterImageView.kf.setImage(with: movie.posterPath?.tmdbImageURL(size: .w342))
+        guard let url = movie.posterPath?.tmdbImageURL(size: .w342) else { return }
+        LimitedImageDownloader.shared.downloadImage(from: url) { [weak self] image in
+            self?.posterImageView.image = image
+        }
     }
 
     private func setUpLayout() {
