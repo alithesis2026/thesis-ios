@@ -44,7 +44,9 @@ final class MovieListCell: UICollectionViewCell {
 
     func configure(with movie: Movie) {
         titleLabel.text = movie.title
+        titleLabel.isAccessibilityElement = true
         ratingLabel.text = String(format: "★ %.1f", movie.voteAverage)
+        ratingLabel.isAccessibilityElement = true
         posterImageView.kf.setImage(with: movie.posterPath?.tmdbImageURL(size: .w342))
     }
 
