@@ -7,6 +7,7 @@ final class MovieDetailViewModel: ObservableObject {
     @Published private(set) var isLoading = false
     @Published private(set) var errorMessage: String?
     @Published private(set) var isFavorite: Bool
+    @Published private(set) var trailerURL: URL?
 
     let movieId: Int
     private let tmdbService: TMDBServicing
@@ -37,5 +38,10 @@ final class MovieDetailViewModel: ObservableObject {
         guard let detail else { return }
         favoritesStore.toggleFavorite(movie: Movie(detail: detail))
         isFavorite = favoritesStore.isFavorite(movieId: movieId)
+    }
+
+    func loadTrailer() {
+        guard let detail else { return }
+        trailerURL = URL(string: "https://www.youtube.com/results?search_query=\(detail.title)+trailer")
     }
 }
