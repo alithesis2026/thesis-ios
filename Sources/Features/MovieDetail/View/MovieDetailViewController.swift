@@ -157,7 +157,7 @@ final class MovieDetailViewController: UIViewController {
 
         var metaParts: [String] = [String(format: "★ %.1f", detail.voteAverage)]
         if let releaseDate = detail.releaseDate, !releaseDate.isEmpty {
-            metaParts.append(DateFormatterHelper.displayString(fromAPIDate: releaseDate))
+            metaParts.append(releaseDate)
         }
         if let runtime = detail.runtime {
             metaParts.append("\(runtime) dk")
