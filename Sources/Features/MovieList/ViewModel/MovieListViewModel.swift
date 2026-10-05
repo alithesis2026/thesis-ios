@@ -35,6 +35,13 @@ final class MovieListViewModel: ObservableObject {
         Task { await loadNextPage() }
     }
 
+    func filter(byTitleContaining query: String) {
+        currentPage = 0
+        totalPages = 1
+        movies = []
+        Task { await loadNextPage() }
+    }
+
     private func loadNextPage() async {
         guard !isFetching, currentPage == 0 || hasMorePages else { return }
         isFetching = true
