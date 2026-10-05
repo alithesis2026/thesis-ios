@@ -46,6 +46,14 @@ final class SearchViewModel: ObservableObject {
         await loadNextPage()
     }
 
+    func filterResults(minRating: Double) -> [Movie] {
+        results.filter { $0.voteAverage >= minRating }
+    }
+
+    func sortByRating(_ movies: [Movie]) -> [Movie] {
+        movies.sorted { $0.voteAverage > $1.voteAverage }
+    }
+
     private func loadNextPage() async {
         guard !isFetching, !activeQuery.isEmpty, currentPage == 0 || hasMorePages else { return }
         let query = activeQuery
