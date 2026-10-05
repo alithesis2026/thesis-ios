@@ -19,6 +19,7 @@ final class MovieDetailViewModel: ObservableObject {
         self.isFavorite = favoritesStore.isFavorite(movieId: movieId)
     }
 
+    @MainActor
     func load() async {
         isLoading = true
         errorMessage = nil
@@ -33,9 +34,19 @@ final class MovieDetailViewModel: ObservableObject {
         }
     }
 
+    @MainActor
     func toggleFavorite() {
         guard let detail else { return }
         favoritesStore.toggleFavorite(movie: Movie(detail: detail))
         isFavorite = favoritesStore.isFavorite(movieId: movieId)
+    }
+
+    func refreshMetadata() async {
+        guard let detail else { return }
+        do {
+            self.detail = try await tmdbService.movieDetail(id: detail.id)
+        } catch {
+            errorMessage = NetworkError.unknown.userMessage
+        }
     }
 }
