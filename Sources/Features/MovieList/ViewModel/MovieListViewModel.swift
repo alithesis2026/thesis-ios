@@ -6,6 +6,15 @@ final class MovieListViewModel: ObservableObject {
     @Published private(set) var movies: [Movie] = []
     @Published private(set) var isLoading = false
     @Published private(set) var errorMessage: String?
+    @Published private(set) var filteredMovies: [Movie] = []
+
+    var minimumRating: Double = 0 {
+        didSet {
+            updateFilteredList()
+            recalculateAverageRating()
+            persistFilterPreference()
+        }
+    }
 
     private let tmdbService: TMDBServicing
     private var currentPage = 0
@@ -55,5 +64,17 @@ final class MovieListViewModel: ObservableObject {
         } catch {
             errorMessage = NetworkError.unknown.userMessage
         }
+    }
+
+    private func updateFilteredList() {
+        filteredMovies = movies.filter { $0.voteAverage >= minimumRating }
+    }
+
+    private func recalculateAverageRating() {
+        _ = filteredMovies.map(\.voteAverage).reduce(0, +)
+    }
+
+    private func persistFilterPreference() {
+        UserDefaults.standard.set(minimumRating, forKey: "movieList.minimumRating")
     }
 }
