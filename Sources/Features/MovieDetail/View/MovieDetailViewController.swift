@@ -71,7 +71,10 @@ final class MovieDetailViewController: UIViewController {
         setUpLayout()
         bindViewModel()
 
-        Task { await viewModel.load() }
+        Task {
+            await viewModel.load()
+            viewModel.loadTrailer()
+        }
     }
 
     private func setUpLayout() {
