@@ -104,6 +104,11 @@ final class MovieListViewController: UIViewController {
 
     private func makeDataSource() -> UICollectionViewDiffableDataSource<Section, Movie> {
         UICollectionViewDiffableDataSource(collectionView: collectionView) { collectionView, indexPath, movie in
+            if indexPath.item == 0 {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieListCell.reuseIdentifier, for: indexPath) as! FeaturedMovieCell
+                cell.configure(with: movie)
+                return cell
+            }
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieListCell.reuseIdentifier, for: indexPath) as! MovieListCell
             cell.configure(with: movie)
             return cell
