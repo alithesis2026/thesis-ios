@@ -1,6 +1,17 @@
 import Foundation
 import Combine
 
+extension String {
+    var formattedReleaseDate: String {
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd"
+        guard let date = inputFormatter.date(from: self) else { return self }
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateStyle = .medium
+        return outputFormatter.string(from: date)
+    }
+}
+
 @MainActor
 final class SearchViewModel: ObservableObject {
     @Published var queryText: String = ""
