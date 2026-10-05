@@ -63,11 +63,7 @@ final class FavoritesStore: FavoritesStoring {
     }
 
     private func saveAndNotify() {
-        do {
-            try context.save()
-            changeSubject.send()
-        } catch {
-            assertionFailure("Failed to save favorite: \(error)")
-        }
+        try? context.save()
+        changeSubject.send()
     }
 }
