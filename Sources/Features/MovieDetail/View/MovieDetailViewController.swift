@@ -52,6 +52,12 @@ final class MovieDetailViewController: UIViewController {
         return label
     }()
 
+    private let addToFavoritesButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Add to Favorites", for: .normal)
+        return button
+    }()
+
     private let activityIndicator = UIActivityIndicatorView(style: .large)
     private lazy var favoriteButton = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: self, action: #selector(handleFavoriteTapped))
 
@@ -79,12 +85,13 @@ final class MovieDetailViewController: UIViewController {
         view.addSubview(activityIndicator)
         scrollView.addSubview(contentStack)
 
-        [backdropImageView, titleLabel, metaLabel, taglineLabel, overviewLabel].forEach {
+        [backdropImageView, titleLabel, metaLabel, taglineLabel, overviewLabel, addToFavoritesButton].forEach {
             contentStack.addArrangedSubview($0)
         }
         contentStack.setCustomSpacing(4, after: titleLabel)
+        addToFavoritesButton.addTarget(self, action: #selector(handleFavoriteTapped), for: .touchUpInside)
 
-        [scrollView, contentStack, activityIndicator, backdropImageView, titleLabel, metaLabel, taglineLabel, overviewLabel].forEach {
+        [scrollView, contentStack, activityIndicator, backdropImageView, titleLabel, metaLabel, taglineLabel, overviewLabel, addToFavoritesButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
 
@@ -157,7 +164,7 @@ final class MovieDetailViewController: UIViewController {
 
         var metaParts: [String] = [String(format: "★ %.1f", detail.voteAverage)]
         if let releaseDate = detail.releaseDate, !releaseDate.isEmpty {
-            metaParts.append(DateFormatterHelper.displayString(fromAPIDate: releaseDate))
+            metaParts.append(releaseDate)
         }
         if let runtime = detail.runtime {
             metaParts.append("\(runtime) dk")
