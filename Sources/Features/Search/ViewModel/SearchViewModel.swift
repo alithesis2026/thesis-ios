@@ -20,7 +20,7 @@ final class SearchViewModel: ObservableObject {
 
         $queryText
             .removeDuplicates()
-            .debounce(for: .milliseconds(400), scheduler: DispatchQueue.main)
+            .debounce(for: .milliseconds(250), scheduler: DispatchQueue.main)
             .sink { [weak self] text in
                 Task { await self?.search(query: text) }
             }

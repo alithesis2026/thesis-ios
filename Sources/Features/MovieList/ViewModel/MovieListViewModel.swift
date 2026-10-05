@@ -31,7 +31,7 @@ final class MovieListViewModel: ObservableObject {
     }
 
     func loadMoreIfNeeded(currentIndex: Int) {
-        guard currentIndex >= movies.count - 5, hasMorePages, !isFetching else { return }
+        guard currentIndex >= movies.count - 3, hasMorePages, !isFetching else { return }
         Task { await loadNextPage() }
     }
 
