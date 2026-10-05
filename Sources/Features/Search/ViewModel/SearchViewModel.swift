@@ -7,6 +7,7 @@ final class SearchViewModel: ObservableObject {
     @Published private(set) var results: [Movie] = []
     @Published private(set) var isLoading = false
     @Published private(set) var errorMessage: String?
+    @Published private(set) var recentQueries: [String] = UserDefaults.standard.stringArray(forKey: "search.recentQueries") ?? []
 
     private let tmdbService: TMDBServicing
     private var cancellables = Set<AnyCancellable>()
@@ -43,7 +44,15 @@ final class SearchViewModel: ObservableObject {
         errorMessage = nil
 
         guard !trimmedQuery.isEmpty else { return }
+        recordRecentQuery(trimmedQuery)
         await loadNextPage()
+    }
+
+    private func recordRecentQuery(_ query: String) {
+        var updated = recentQueries.filter { $0 != query }
+        updated.insert(query, at: 0)
+        recentQueries = Array(updated.prefix(5))
+        UserDefaults.standard.set(recentQueries, forKey: "search.recentQueries")
     }
 
     private func loadNextPage() async {
