@@ -55,6 +55,28 @@ final class FavoritesStore: FavoritesStoring {
         }
     }
 
+    func fetchFavorites(completion: @escaping ([Movie]?, Error?) -> Void) {
+        let request = FavoriteMovie.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "addedAt", ascending: false)]
+        do {
+            let entities = try context.fetch(request)
+            let movies = entities.map { entity in
+                Movie(
+                    id: Int(entity.id),
+                    title: entity.title ?? "",
+                    overview: "",
+                    posterPath: entity.posterPath,
+                    backdropPath: nil,
+                    voteAverage: entity.voteAverage,
+                    releaseDate: entity.releaseDate
+                )
+            }
+            completion(movies, nil)
+        } catch {
+            completion(nil, error)
+        }
+    }
+
     private func fetchEntity(id: Int) -> FavoriteMovie? {
         let request = FavoriteMovie.fetchRequest()
         request.predicate = NSPredicate(format: "id == %d", id)
