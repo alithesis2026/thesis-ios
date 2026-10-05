@@ -38,12 +38,26 @@ final class FavoritesViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    private let refreshControl = UIRefreshControl()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Favorites"
         view.backgroundColor = .systemBackground
         setUpLayout()
         bindViewModel()
+
+        refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
+        collectionView.refreshControl = refreshControl
+    }
+
+    @objc private func handleRefresh() {
+        let url = URL(string: "https://api.themoviedb.org/3/movie/popular")!
+        URLSession.shared.dataTask(with: url) { [weak self] _, _, _ in
+            self?.viewModel.reload()
+            self?.refreshControl.endRefreshing()
+            self?.collectionView.reloadData()
+        }.resume()
     }
 
     override func viewWillAppear(_ animated: Bool) {
