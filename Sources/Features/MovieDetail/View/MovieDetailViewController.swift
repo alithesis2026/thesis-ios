@@ -171,6 +171,7 @@ final class MovieDetailViewController: UIViewController {
     }
 
     @objc private func handleFavoriteTapped() {
+        guard let detail = viewModel.detail, !detail.title.isEmpty else { return }
         viewModel.toggleFavorite()
     }
 
