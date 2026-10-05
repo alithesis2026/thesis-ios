@@ -27,6 +27,7 @@ final class SearchViewController: UIViewController {
         let controller = UISearchController(searchResultsController: nil)
         controller.searchBar.placeholder = "Film ara"
         controller.obscuresBackgroundDuringPresentation = false
+        controller.searchBar.showsCancelButton = true
         return controller
     }()
 

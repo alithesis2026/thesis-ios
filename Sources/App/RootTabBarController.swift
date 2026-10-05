@@ -15,6 +15,7 @@ final class RootTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         viewControllers = [movieListTab(), searchTab(), favoritesTab(), settingsTab()]
+        tabBar.tintColor = .systemOrange
 
         NotificationCenter.default.addObserver(
             self,

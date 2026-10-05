@@ -23,6 +23,7 @@ final class URLSessionAPIClient: APIClient {
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
+        request.timeoutInterval = 15
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("Bearer \(APIConfig.readAccessToken)", forHTTPHeaderField: "Authorization")
 

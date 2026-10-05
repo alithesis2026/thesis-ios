@@ -20,6 +20,10 @@ final class FavoritesViewModel: ObservableObject {
     }
 
     func reload() {
-        favorites = favoritesStore.fetchAllFavorites()
+        favorites = sortedByTitle(favoritesStore.fetchAllFavorites())
+    }
+
+    private func sortedByTitle(_ movies: [Movie]) -> [Movie] {
+        movies.sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
     }
 }
