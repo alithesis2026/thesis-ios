@@ -8,12 +8,18 @@ final class MovieListViewModel: ObservableObject {
     @Published private(set) var errorMessage: String?
 
     private let tmdbService: TMDBServicing
+    private let trendingService = MovieService()
     private var currentPage = 0
     private var totalPages = 1
     private var isFetching = false
 
     init(tmdbService: TMDBServicing) {
         self.tmdbService = tmdbService
+    }
+
+    func loadTrendingBanner() async -> [Movie] {
+        guard let trending = try? await trendingService.fetchTrending() else { return [] }
+        return trending.map { Movie(dto: $0) }
     }
 
     private var hasMorePages: Bool { currentPage < totalPages }
