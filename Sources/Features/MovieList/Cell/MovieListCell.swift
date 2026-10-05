@@ -45,7 +45,7 @@ final class MovieListCell: UICollectionViewCell {
     func configure(with movie: Movie) {
         titleLabel.text = movie.title
         ratingLabel.text = String(format: "★ %.1f", movie.voteAverage)
-        posterImageView.kf.setImage(with: movie.posterPath?.tmdbImageURL(size: .w342))
+        posterImageView.image = UIImage(named: movie.posterPath ?? "")
     }
 
     private func setUpLayout() {
