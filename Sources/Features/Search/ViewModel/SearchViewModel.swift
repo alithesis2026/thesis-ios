@@ -7,6 +7,9 @@ final class SearchViewModel: ObservableObject {
     @Published private(set) var results: [Movie] = []
     @Published private(set) var isLoading = false
     @Published private(set) var errorMessage: String?
+    @Published var sortByRating = false {
+        didSet { applySorting() }
+    }
 
     private let tmdbService: TMDBServicing
     private var cancellables = Set<AnyCancellable>()
@@ -14,6 +17,7 @@ final class SearchViewModel: ObservableObject {
     private var totalPages = 1
     private var isFetching = false
     private var activeQuery = ""
+    private var unsortedResults: [Movie] = []
 
     init(tmdbService: TMDBServicing) {
         self.tmdbService = tmdbService
@@ -39,11 +43,16 @@ final class SearchViewModel: ObservableObject {
         activeQuery = trimmedQuery
         currentPage = 0
         totalPages = 1
-        results = []
+        unsortedResults = []
+        applySorting()
         errorMessage = nil
 
         guard !trimmedQuery.isEmpty else { return }
         await loadNextPage()
+    }
+
+    private func applySorting() {
+        results = sortByRating ? unsortedResults.sorted { $0.voteAverage > $1.voteAverage } : unsortedResults
     }
 
     private func loadNextPage() async {
@@ -59,7 +68,8 @@ final class SearchViewModel: ObservableObject {
         do {
             let response = try await tmdbService.searchMovies(query: query, page: currentPage + 1)
             guard query == activeQuery else { return }
-            results.append(contentsOf: response.results.map { Movie(dto: $0) })
+            unsortedResults.append(contentsOf: response.results.map { Movie(dto: $0) })
+            applySorting()
             currentPage = response.page
             totalPages = response.totalPages
         } catch let error as NetworkError {
