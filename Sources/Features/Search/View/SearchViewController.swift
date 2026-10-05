@@ -16,6 +16,7 @@ final class SearchViewController: UIViewController {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: MovieListViewController.makeLayout())
         collectionView.backgroundColor = .systemBackground
         collectionView.register(MovieListCell.self, forCellWithReuseIdentifier: MovieListCell.reuseIdentifier)
+        collectionView.register(SearchResultCell.self, forCellWithReuseIdentifier: SearchResultCell.reuseIdentifier)
         collectionView.delegate = self
         collectionView.keyboardDismissMode = .onDrag
         return collectionView
@@ -100,9 +101,10 @@ final class SearchViewController: UIViewController {
     }
 
     private func makeDataSource() -> UICollectionViewDiffableDataSource<Section, Movie> {
-        UICollectionViewDiffableDataSource(collectionView: collectionView) { collectionView, indexPath, movie in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieListCell.reuseIdentifier, for: indexPath) as! MovieListCell
+        UICollectionViewDiffableDataSource(collectionView: collectionView) { [weak self] collectionView, indexPath, movie in
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchResultCell.reuseIdentifier, for: indexPath) as! SearchResultCell
             cell.configure(with: movie)
+            cell.delegate = self
             return cell
         }
     }
@@ -118,6 +120,13 @@ final class SearchViewController: UIViewController {
 extension SearchViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         viewModel.queryText = searchController.searchBar.text ?? ""
+    }
+}
+
+extension SearchViewController: SearchResultCellDelegate {
+    func searchResultCellDidTapFavorite(_ cell: SearchResultCell) {
+        guard let indexPath = collectionView.indexPath(for: cell), let movie = dataSource.itemIdentifier(for: indexPath) else { return }
+        onSelectMovie?(movie.id)
     }
 }
 
