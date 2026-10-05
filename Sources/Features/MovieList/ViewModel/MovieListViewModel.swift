@@ -20,6 +20,7 @@ final class MovieListViewModel: ObservableObject {
 
     func loadInitialPageIfNeeded() async {
         guard movies.isEmpty else { return }
+        AnalyticsManager.shared.track("movie_list_viewed")
         await loadNextPage()
     }
 
