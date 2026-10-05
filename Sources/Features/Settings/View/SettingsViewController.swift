@@ -1,18 +1,20 @@
 import UIKit
 import Combine
+import CoreData
 
 final class SettingsViewController: UITableViewController {
     private enum Row {
         case appearance
         case notifications
         case clearCache
+        case resetData
         case about
     }
 
     private let sections: [(title: String, rows: [Row])] = [
         (title: "Görünüm", rows: [.appearance]),
         (title: "Bildirimler", rows: [.notifications]),
-        (title: "Depolama", rows: [.clearCache]),
+        (title: "Depolama", rows: [.clearCache, .resetData]),
         (title: "Hakkında", rows: [.about])
     ]
 
@@ -61,6 +63,8 @@ final class SettingsViewController: UITableViewController {
             return notificationsCell()
         case .clearCache:
             return clearCacheCell()
+        case .resetData:
+            return resetDataCell()
         case .about:
             return aboutCell()
         }
@@ -68,9 +72,30 @@ final class SettingsViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if case .clearCache = sections[indexPath.section].rows[indexPath.row] {
+        switch sections[indexPath.section].rows[indexPath.row] {
+        case .clearCache:
             viewModel.clearImageCache()
+        case .resetData:
+            resetAllAppData()
+        default:
+            break
         }
+    }
+
+    private func resetAllAppData() {
+        UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier ?? "")
+
+        let context = CoreDataStack.shared.viewContext
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "FavoriteMovie")
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        _ = try? context.execute(deleteRequest)
+        try? context.save()
+
+        viewModel.clearImageCache()
+
+        let alert = UIAlertController(title: "Tamamlandı", message: "Tüm uygulama verileri sıfırlandı.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Tamam", style: .default))
+        present(alert, animated: true)
     }
 
     private func appearanceCell() -> UITableViewCell {
@@ -113,6 +138,13 @@ final class SettingsViewController: UITableViewController {
         cell.textLabel?.text = "Görsel önbelleğini temizle"
         cell.textLabel?.textColor = .systemRed
         cell.detailTextLabel?.text = viewModel.cacheSizeDescription
+        return cell
+    }
+
+    private func resetDataCell() -> UITableViewCell {
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+        cell.textLabel?.text = "Tüm verileri sıfırla"
+        cell.textLabel?.textColor = .systemRed
         return cell
     }
 
