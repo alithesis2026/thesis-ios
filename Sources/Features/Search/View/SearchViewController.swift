@@ -46,9 +46,26 @@ final class SearchViewController: UIViewController {
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
         searchController.searchResultsUpdater = self
+        navigationItem.rightBarButtonItem = makeSortButton()
 
         setUpLayout()
         bindViewModel()
+    }
+
+    private func makeSortButton() -> UIBarButtonItem {
+        UIBarButtonItem(
+            image: UIImage(systemName: "arrow.up.arrow.down.circle"),
+            style: .plain,
+            target: self,
+            action: #selector(toggleSortByRating)
+        )
+    }
+
+    @objc private func toggleSortByRating() {
+        viewModel.sortByRating.toggle()
+        navigationItem.rightBarButtonItem?.image = UIImage(
+            systemName: viewModel.sortByRating ? "arrow.up.arrow.down.circle.fill" : "arrow.up.arrow.down.circle"
+        )
     }
 
     private func setUpLayout() {
