@@ -83,14 +83,6 @@ final class SearchViewController: UIViewController {
                 isLoading ? self?.activityIndicator.startAnimating() : self?.activityIndicator.stopAnimating()
             }
             .store(in: &cancellables)
-
-        viewModel.$errorMessage
-            .compactMap { $0 }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] message in
-                self?.presentError(message: message)
-            }
-            .store(in: &cancellables)
     }
 
     private func presentError(message: String) {
