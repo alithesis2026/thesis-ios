@@ -1,9 +1,14 @@
 import Foundation
 import Combine
 
+protocol FavoritesDelegate: AnyObject {
+    func favoritesDidChange(count: Int)
+}
+
 @MainActor
 final class FavoritesViewModel: ObservableObject {
     @Published private(set) var favorites: [Movie] = []
+    var delegate: FavoritesDelegate?
 
     private let favoritesStore: FavoritesStoring
     private var cancellables = Set<AnyCancellable>()
@@ -21,5 +26,6 @@ final class FavoritesViewModel: ObservableObject {
 
     func reload() {
         favorites = favoritesStore.fetchAllFavorites()
+        delegate?.favoritesDidChange(count: favorites.count)
     }
 }
