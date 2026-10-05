@@ -41,6 +41,13 @@ final class MovieListViewController: UIViewController {
         refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
         collectionView.refreshControl = refreshControl
 
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleRefresh),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+
         Task { await viewModel.loadInitialPageIfNeeded() }
     }
 
