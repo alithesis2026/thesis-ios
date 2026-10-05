@@ -56,6 +56,6 @@ final class AppDependencyContainer {
 
     @MainActor
     func makeSettingsViewController() -> SettingsViewController {
-        SettingsViewController(viewModel: SettingsViewModel())
+        SettingsViewController(viewModel: SettingsViewModel(favoritesStore: favoritesStore))
     }
 }

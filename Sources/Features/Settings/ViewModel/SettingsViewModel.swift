@@ -36,6 +36,8 @@ final class SettingsViewModel: ObservableObject {
     }
     @Published private(set) var cacheSizeDescription = "Hesaplanıyor…"
 
+    private let favoritesStore: FavoritesStoring
+
     private enum Keys {
         static let appearanceMode = AppearanceMode.storageKey
         static let notificationsEnabled = "settings.notificationsEnabled"
@@ -47,10 +49,15 @@ final class SettingsViewModel: ObservableObject {
         return "\(version) (\(build))"
     }
 
-    init() {
+    init(favoritesStore: FavoritesStoring) {
+        self.favoritesStore = favoritesStore
         let storedMode = UserDefaults.standard.integer(forKey: Keys.appearanceMode)
         appearanceMode = AppearanceMode(rawValue: storedMode) ?? .system
         notificationsEnabled = UserDefaults.standard.bool(forKey: Keys.notificationsEnabled)
+    }
+
+    func clearFavorites() {
+        favoritesStore.clearAll()
     }
 
     func refreshCacheSize() {

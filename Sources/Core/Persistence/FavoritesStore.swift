@@ -7,6 +7,7 @@ protocol FavoritesStoring {
     func isFavorite(movieId: Int) -> Bool
     func toggleFavorite(movie: Movie)
     func fetchAllFavorites() -> [Movie]
+    func clearAll()
 }
 
 final class FavoritesStore: FavoritesStoring {
@@ -53,6 +54,13 @@ final class FavoritesStore: FavoritesStoring {
                 releaseDate: entity.releaseDate
             )
         }
+    }
+
+    func clearAll() {
+        let request = FavoriteMovie.fetchRequest()
+        guard let entities = try? context.fetch(request) else { return }
+        entities.forEach { context.delete($0) }
+        saveAndNotify()
     }
 
     private func fetchEntity(id: Int) -> FavoriteMovie? {

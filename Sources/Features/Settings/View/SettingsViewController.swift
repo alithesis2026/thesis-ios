@@ -6,13 +6,14 @@ final class SettingsViewController: UITableViewController {
         case appearance
         case notifications
         case clearCache
+        case clearFavorites
         case about
     }
 
     private let sections: [(title: String, rows: [Row])] = [
         (title: "Görünüm", rows: [.appearance]),
         (title: "Bildirimler", rows: [.notifications]),
-        (title: "Depolama", rows: [.clearCache]),
+        (title: "Depolama", rows: [.clearCache, .clearFavorites]),
         (title: "Hakkında", rows: [.about])
     ]
 
@@ -61,6 +62,8 @@ final class SettingsViewController: UITableViewController {
             return notificationsCell()
         case .clearCache:
             return clearCacheCell()
+        case .clearFavorites:
+            return clearFavoritesCell()
         case .about:
             return aboutCell()
         }
@@ -68,9 +71,27 @@ final class SettingsViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if case .clearCache = sections[indexPath.section].rows[indexPath.row] {
+        switch sections[indexPath.section].rows[indexPath.row] {
+        case .clearCache:
             viewModel.clearImageCache()
+        case .clearFavorites:
+            presentClearFavoritesConfirmation()
+        case .appearance, .notifications, .about:
+            break
         }
+    }
+
+    private func presentClearFavoritesConfirmation() {
+        let alert = UIAlertController(
+            title: "Favorileri Temizle",
+            message: "Tüm favori filmler kalıcı olarak silinecek. Bu işlem geri alınamaz.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "İptal", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Temizle", style: .destructive) { [weak self] _ in
+            self?.viewModel.clearFavorites()
+        })
+        present(alert, animated: true)
     }
 
     private func appearanceCell() -> UITableViewCell {
@@ -113,6 +134,13 @@ final class SettingsViewController: UITableViewController {
         cell.textLabel?.text = "Görsel önbelleğini temizle"
         cell.textLabel?.textColor = .systemRed
         cell.detailTextLabel?.text = viewModel.cacheSizeDescription
+        return cell
+    }
+
+    private func clearFavoritesCell() -> UITableViewCell {
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+        cell.textLabel?.text = "Tüm favorileri temizle"
+        cell.textLabel?.textColor = .systemRed
         return cell
     }
 
