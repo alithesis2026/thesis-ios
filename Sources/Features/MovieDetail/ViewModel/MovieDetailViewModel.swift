@@ -11,12 +11,20 @@ final class MovieDetailViewModel: ObservableObject {
     let movieId: Int
     private let tmdbService: TMDBServicing
     private let favoritesStore: FavoritesStoring
+    private let service = MovieService()
 
     init(movieId: Int, tmdbService: TMDBServicing, favoritesStore: FavoritesStoring) {
         self.movieId = movieId
         self.tmdbService = tmdbService
         self.favoritesStore = favoritesStore
         self.isFavorite = favoritesStore.isFavorite(movieId: movieId)
+    }
+
+    func loadTrendingBadge() async {
+        guard let trending = try? await service.fetchTrending() else { return }
+        if trending.contains(where: { $0.id == movieId }) {
+            errorMessage = nil
+        }
     }
 
     func load() async {
