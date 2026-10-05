@@ -15,7 +15,7 @@ final class FavoritesViewController: UIViewController {
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: MovieListViewController.makeLayout())
         collectionView.backgroundColor = .systemBackground
-        collectionView.register(MovieListCell.self, forCellWithReuseIdentifier: MovieListCell.reuseIdentifier)
+        collectionView.register(FavoritesCell.self, forCellWithReuseIdentifier: FavoritesCell.reuseIdentifier)
         collectionView.delegate = self
         return collectionView
     }()
@@ -83,7 +83,7 @@ final class FavoritesViewController: UIViewController {
 
     private func makeDataSource() -> UICollectionViewDiffableDataSource<Section, Movie> {
         UICollectionViewDiffableDataSource(collectionView: collectionView) { collectionView, indexPath, movie in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieListCell.reuseIdentifier, for: indexPath) as! MovieListCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FavoritesCell.reuseIdentifier, for: indexPath) as! FavoritesCell
             cell.configure(with: movie)
             return cell
         }
