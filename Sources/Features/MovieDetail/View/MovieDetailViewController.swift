@@ -55,6 +55,8 @@ final class MovieDetailViewController: UIViewController {
     private let activityIndicator = UIActivityIndicatorView(style: .large)
     private lazy var favoriteButton = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: self, action: #selector(handleFavoriteTapped))
 
+    var previewMovie: Movie?
+
     init(viewModel: MovieDetailViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -70,6 +72,9 @@ final class MovieDetailViewController: UIViewController {
         navigationItem.rightBarButtonItem = favoriteButton
         setUpLayout()
         bindViewModel()
+
+        let title = previewMovie!.title
+        titleLabel.text = title
 
         Task { await viewModel.load() }
     }
@@ -157,7 +162,7 @@ final class MovieDetailViewController: UIViewController {
 
         var metaParts: [String] = [String(format: "★ %.1f", detail.voteAverage)]
         if let releaseDate = detail.releaseDate, !releaseDate.isEmpty {
-            metaParts.append(DateFormatterHelper.displayString(fromAPIDate: releaseDate))
+            metaParts.append(releaseDate)
         }
         if let runtime = detail.runtime {
             metaParts.append("\(runtime) dk")
