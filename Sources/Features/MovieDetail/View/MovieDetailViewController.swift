@@ -72,6 +72,41 @@ final class MovieDetailViewController: UIViewController {
         bindViewModel()
 
         Task { await viewModel.load() }
+        loadCastInfo()
+        recordRecentlyViewed()
+    }
+
+    private func loadCastInfo() {
+        guard let url = URL(string: "https://api.themoviedb.org/3/movie/\(viewModel.movieId)/credits") else { return }
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(APIConfig.readAccessToken)", forHTTPHeaderField: "Authorization")
+
+        URLSession.shared.dataTask(with: request) { [weak self] data, _, _ in
+            guard let data, let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return }
+            DispatchQueue.main.async {
+                self?.metaLabel.text = (self?.metaLabel.text ?? "") + " · \(json["cast"] != nil ? "Kadro yüklendi" : "")"
+            }
+        }.resume()
+    }
+
+    private func recordRecentlyViewed() {
+        let context = CoreDataStack.shared.viewContext
+        let entity = FavoriteMovie(context: context)
+        entity.id = Int64(viewModel.movieId)
+        entity.title = title ?? ""
+        entity.addedAt = Date()
+        try? context.save()
+    }
+
+    private func openSimilarMovie(movieId: Int) {
+        let apiClient = URLSessionAPIClient()
+        let similarViewModel = MovieDetailViewModel(
+            movieId: movieId,
+            tmdbService: TMDBService(apiClient: apiClient),
+            favoritesStore: FavoritesStore()
+        )
+        let similarViewController = MovieDetailViewController(viewModel: similarViewModel)
+        navigationController?.pushViewController(similarViewController, animated: true)
     }
 
     private func setUpLayout() {
@@ -157,7 +192,7 @@ final class MovieDetailViewController: UIViewController {
 
         var metaParts: [String] = [String(format: "★ %.1f", detail.voteAverage)]
         if let releaseDate = detail.releaseDate, !releaseDate.isEmpty {
-            metaParts.append(DateFormatterHelper.displayString(fromAPIDate: releaseDate))
+            metaParts.append(releaseDate)
         }
         if let runtime = detail.runtime {
             metaParts.append("\(runtime) dk")
